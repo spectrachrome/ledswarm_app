@@ -69,7 +69,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Vibrate shortly to provide user feedback
     if (await Vibration.hasCustomVibrationsSupport()) {
-      Vibration.vibrate(duration: 10);
+      // Different lengths (intensities) should correspond to their actions:
+      //
+      // - 10ms: ultra-short burst (for granular value changes) (below this value, intensities will differ due to alignment
+      //         issues relating to the phase of the vibrator, and it __will__ feel inconsistent)
+      // - 20ms: short burst (button press feedback, for example game control play/pause/stop)
+      // - 40ms: burst (warning indication)
+      // - 40ms, then 120ms silence, then 40ms: double burst (error indication)
+      Vibration.vibrate(duration: 40);
+      /*await Future.delayed(Duration(milliseconds: 120));
+      Vibration.vibrate(duration: 40);*/
     } else {
       Vibration.vibrate();
     }
