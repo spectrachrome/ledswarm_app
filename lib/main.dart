@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 
+import './app_theme.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -12,26 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'LEDswarm',
+      theme: AppThemes.lightTheme, // Default light theme
+      darkTheme: AppThemes.oledDarkTheme,
+      themeMode: ThemeMode.system, // Follow system theme
+      home: const MyHomePage(title: 'LEDswarm'),
     );
   }
 }
@@ -76,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // - 20ms: short burst (button press feedback, for example game control play/pause/stop)
       // - 40ms: burst (warning indication)
       // - 40ms, then 120ms silence, then 40ms: double burst (error indication)
-      Vibration.vibrate(duration: 40);
+      Vibration.vibrate(duration: 13);
       /*await Future.delayed(Duration(milliseconds: 120));
       Vibration.vibrate(duration: 40);*/
     } else {
@@ -101,6 +88,36 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+      ),
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            /*const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text('Drawer Header'),
+              ),*/
+            Container(height: 50.0),
+            ListTile(
+              title: const Text('Item 1'),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),
+            ListTile(
+              title: const Text('Item 2'),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),
+          ],
+        ),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
