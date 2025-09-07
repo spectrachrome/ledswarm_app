@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppThemes.oledDarkTheme,
       themeMode: ThemeMode.system, // Follow system theme
       home: const MyHomePage(title: 'LEDswarm'),
+      debugShowCheckedModeBanner: false, // Disable debug mode flag
     );
   }
 }
@@ -43,6 +44,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int _selectedTab = 0;
+
+  // Create a PageController to manage the PageView
+  final PageController _pageController = PageController();
+
+  void _onBottomNavItemTapped(int index) {
+    setState(() {
+      _selectedTab = index;
+    });
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _selectedTab = index;
+    });
+  }
 
   void _incrementCounter() async {
     setState(() {
@@ -73,51 +90,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    int selectedIndex = 0;
+    const TextStyle optionStyle = TextStyle(
+      fontSize: 30,
+      fontWeight: FontWeight.bold,
+    );
+    const List<Widget> _widgetOptions = <Widget>[
+      Text('Index 0: Game', style: optionStyle),
+      Text('Index 1: Controllers', style: optionStyle),
+      Text('Index 2: Presets', style: optionStyle),
+      Text('Index 3: Settings', style: optionStyle),
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            /*const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('Drawer Header'),
-              ),*/
-            Container(height: 50.0),
-            ListTile(
-              title: const Text('Item 1'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
-            ),
-            ListTile(
-              title: const Text('Item 2'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: 'Game'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cell_tower),
+            label: 'Devices',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.monitor), label: 'Monitor'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        showUnselectedLabels: true,
+        currentIndex: _selectedTab,
+        selectedFontSize: 12.0,
+        unselectedFontSize: 12.0,
+        iconSize: 24,
+        onTap: _onBottomNavItemTapped,
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it

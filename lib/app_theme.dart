@@ -34,5 +34,28 @@ class AppThemes {
     ),
     scaffoldBackgroundColor: Colors.black,
     cardColor: const Color(0xFF0A0A0A),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      selectedItemColor: Colors.white, // Selected icon/text color
+      unselectedItemColor: Colors.white, // Unselected icon/text color
+      selectedIconTheme: IconThemeData(
+        // Selected icon specific styling
+        color: Colors.white,
+        size: 30,
+      ),
+      unselectedIconTheme: IconThemeData(
+        // Unselected icon specific styling
+        color: Colors.grey,
+        size: 24,
+      ),
+      selectedLabelStyle: TextStyle(
+        // Selected text styling
+        color: Colors.blue,
+        fontWeight: FontWeight.bold,
+      ),
+      unselectedLabelStyle: TextStyle(
+        // Unselected text styling
+        color: Colors.grey,
+      ),
+    ),
   );
 }
