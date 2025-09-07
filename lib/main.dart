@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 
 import './app_theme.dart';
+import './components/game_settings.dart';
+import './components/global_settings.dart';
+import './components/connected_devices.dart';
+import './components/media_controls.dart';
+
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_tailwind_ui/flutter_tailwind_ui.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +47,65 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _SampleCard extends StatelessWidget {
+  const _SampleCard({required this.cardName});
+  final String cardName;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.sizeOf(context).width - 20,
+      height: 100,
+      child: Column(children: [Container(height: 32.0, child: SingleChoice())]),
+    );
+  }
+}
+
+enum Calendar { day, week, month, year }
+
+class SingleChoice extends StatefulWidget {
+  const SingleChoice({super.key});
+
+  @override
+  State<SingleChoice> createState() => _SingleChoiceState();
+}
+
+class _SingleChoiceState extends State<SingleChoice> {
+  Calendar calendarView = Calendar.day;
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<Calendar>(
+      segments: const <ButtonSegment<Calendar>>[
+        ButtonSegment<Calendar>(
+          value: Calendar.day,
+          label: Text('Play'),
+          icon: Icon(Icons.play_arrow),
+        ),
+        ButtonSegment<Calendar>(
+          value: Calendar.week,
+          label: Text('Pause'),
+          icon: Icon(Icons.pause),
+        ),
+        ButtonSegment<Calendar>(
+          value: Calendar.month,
+          label: Text('Stop'),
+          icon: Icon(Icons.stop),
+        ),
+      ],
+      selected: <Calendar>{calendarView},
+      onSelectionChanged: (Set<Calendar> newSelection) {
+        setState(() {
+          // By default there is only a single segment that can be
+          // selected at one time, so its value is always the first
+          // item in the selected set.
+          calendarView = newSelection.first;
+        });
+      },
+    );
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -88,6 +154,33 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _startGame() async {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
+    });
+
+    // Vibrate shortly to provide user feedback
+    if (await Vibration.hasCustomVibrationsSupport()) {
+      // Different lengths (intensities) should correspond to their actions:
+      //
+      // - 10ms: ultra-short burst (for granular value changes) (below this value, intensities will differ due to alignment
+      //         issues relating to the phase of the vibrator, and it __will__ feel inconsistent)
+      // - 20ms: short burst (button press feedback, for example game control play/pause/stop)
+      // - 40ms: burst (warning indication)
+      // - 40ms, then 120ms silence, then 40ms: double burst (error indication)
+      Vibration.vibrate(duration: 13);
+      /*await Future.delayed(Duration(milliseconds: 120));
+      Vibration.vibrate(duration: 40);*/
+    } else {
+      Vibration.vibrate();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int selectedIndex = 0;
@@ -102,12 +195,15 @@ class _MyHomePageState extends State<MyHomePage> {
       Text('Index 3: Settings', style: optionStyle),
     ];
 
+    double screenWidth = MediaQuery.sizeOf(context).width;
+    double screenHeight = MediaQuery.sizeOf(context).height;
+
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
+        ),*/
+      /*bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.gamepad), label: 'Game'),
           BottomNavigationBarItem(
@@ -126,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
         unselectedFontSize: 12.0,
         iconSize: 24,
         onTap: _onBottomNavItemTapped,
-      ),
+        ),*/
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -146,10 +242,103 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            /*
             const Text('You have pushed the button this many times:'),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+*/
+            /*SpinKitPulse(
+              color: Colors.white,
+              size: 50.0,
+            ),*/
+            Container(
+              width: screenWidth,
+              height: screenHeight,
+              child: ListView(
+                padding: const EdgeInsets.only(
+                  left: 8.0,
+                  top: 64.0,
+                  right: 8.0,
+                  bottom: 8.0,
+                ),
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(
+                      left: 20.0,
+                      top: 0.0,
+                      right: 20.0,
+                      bottom: 10.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Global settings',
+                          textAlign: TextAlign.left,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    child: const GlobalSettings(),
+                    margin: EdgeInsets.all(12.0),
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.only(
+                      left: 20.0,
+                      top: 32.0,
+                      right: 20.0,
+                      bottom: 10.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Game settings',
+                          textAlign: TextAlign.left,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    child: const GameSettings(),
+                    margin: EdgeInsets.all(12.0),
+                  ),
+
+                  /*Card(child: _SampleCard(cardName: 'Elevated Card')),
+
+                  AnimatedMediaControl(),*/
+                  Container(
+                    margin: EdgeInsets.only(
+                      left: 20.0,
+                      top: 32.0,
+                      right: 20.0,
+                      bottom: 10.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Connected devices',
+                          textAlign: TextAlign.left,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    child: const ConnectedDevices(),
+                    margin: EdgeInsets.all(12.0),
+                  ),
+
+                  /*Text("Upgrading hyperluminal drive ..."),*/
+                ],
+              ),
             ),
           ],
         ),
@@ -157,7 +346,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.play_arrow),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
